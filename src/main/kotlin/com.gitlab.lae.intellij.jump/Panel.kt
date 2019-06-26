@@ -25,6 +25,10 @@ fun addPanel(editor: Editor): Panel {
     return panel
 }
 
+private const val markerArc = 6
+private val markerBackground = Color(0xffde7a)
+private val markerBorder = markerBackground.darker()
+
 class Panel(private val editor: Editor) : JComponent(), KeyListener {
 
     private val editorEscapeKeyStrokes = getEditorEscapeKeyStrokes()
@@ -132,7 +136,6 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
     }
 
     private fun paintMarkers(g: Graphics) {
-        val start = System.currentTimeMillis()
         val font = editor.colorsScheme.getFont(EditorFontType.PLAIN)
         val fontMetrics = contentComponent.getFontMetrics(font)
         g.font = font
@@ -141,35 +144,40 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
             RenderingHints.VALUE_ANTIALIAS_ON
         )
         val lineHeight = editor.lineHeight
-        var bgColor = Color.RED
-        var lastPos = Int.MAX_VALUE
-        tree.forEachPathReversed { path, length, pos ->
+        tree.forEachPath { path, length, pos ->
 
-            val marker = path.asSequence().take(length).map { 'a' + it }.take(lastPos - pos).joinToString("")
+            val marker =
+                path.asSequence().take(length).map { 'a' + it }.joinToString("")
             val lineMetrics = fontMetrics.getLineMetrics(marker, g)
             val fontRect = fontMetrics.getStringBounds(marker, g)
             val loc = editor.offsetToXY(pos)
 
-            bgColor = if (bgColor == Color.BLUE) Color.RED else Color.BLUE
-            g.color = bgColor
+            g.color = markerBackground
             g.fillRoundRect(
                 loc.x + contentComponent.x,
                 loc.y + contentComponent.y,
                 fontRect.width.roundToInt(),
                 lineHeight,
-                8,
-                8
+                markerArc,
+                markerArc
+            )
+            g.color = markerBorder
+            g.drawRoundRect(
+                loc.x + contentComponent.x - 1,
+                loc.y + contentComponent.y,
+                fontRect.width.roundToInt() + 1,
+                lineHeight,
+                markerArc,
+                markerArc
             )
 
-            g.color = Color.WHITE
+            g.color = Color.BLACK
             g.drawString(
                 marker,
                 loc.x + contentComponent.x,
                 (loc.y + contentComponent.y + lineMetrics.ascent + lineMetrics.leading + (lineHeight - lineMetrics.height) / 2).roundToInt()
             )
 
-            lastPos = pos
         }
-        println("Paint ms: ${System.currentTimeMillis() - start}")
     }
 }

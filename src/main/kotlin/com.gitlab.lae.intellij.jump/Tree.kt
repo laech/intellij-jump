@@ -12,20 +12,18 @@ private fun <T> Tree<T>.depth(): Int = when (this) {
         else nodes.first().depth() + 1
 }
 
-fun <T> Tree<T>.forEachPathReversed(action: (IntArray, Int, T) -> Unit) =
-    forEachPathReversed(IntArray(depth()), 0, action)
+fun <T> Tree<T>.forEachPath(action: (IntArray, Int, T) -> Unit) =
+    forEachPath(IntArray(depth()), 0, action)
 
-private fun <T> Tree<T>.forEachPathReversed(
+private fun <T> Tree<T>.forEachPath(
     path: IntArray,
     length: Int,
     action: (IntArray, Int, T) -> Unit
 ): Unit = when (this) {
     is Tree.Leaf -> action(path, length, value)
-    is Tree.Node -> {
-        for (i in (nodes.size - 1) downTo 0) {
-            path[length] = i
-            nodes[i].forEachPathReversed(path, length + 1, action)
-        }
+    is Tree.Node -> nodes.indices.forEach { i ->
+        path[length] = i
+        nodes[i].forEachPath(path, length + 1, action)
     }
 }
 
