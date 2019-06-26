@@ -1,0 +1,30 @@
+<idea-plugin>
+    <id>com.gitlab.lae.intellij.jump.jump</id>
+    <name>Jump</name>
+    <vendor url="https://gitlab.com/lae/intellij-jump">Lae</vendor>
+
+    <description><![CDATA[
+    Move the caret to any visiable location of the editor quickly, using the keyboard.
+    ]]></description>
+
+    <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
+    <idea-version since-build="181"/>
+
+    <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!--
+    <change-notes>
+    </change-notes>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+
+    <actions>
+        <action
+                id="com.gitlab.lae.intellij.jump.JumpToChar"
+                class="com.gitlab.lae.intellij.jump.JumpToChar"
+                text="Jump to Char"/>
+    </actions>
+</idea-plugin>
