@@ -51,7 +51,7 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
         listening = true
     }
 
-    fun detach() {
+    private fun detach() {
         if (!attached) {
             return
         }
@@ -79,7 +79,10 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
 
     override fun keyTyped(e: KeyEvent) {
         println(e)
-        if (e.keyCode == VK_ESCAPE || editorEscapeKeyStrokes.contains(getKeyStrokeForEvent(e))) {
+        if (e.keyCode == VK_ESCAPE || editorEscapeKeyStrokes.contains(
+                getKeyStrokeForEvent(e)
+            )
+        ) {
             detach()
             return
         }
@@ -97,14 +100,14 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
 
         if (e.keyChar in 'a'..'z') {
             // TODO check index
-            val subtree = tree.nodes[e.keyChar - 'a']
-            when (subtree) {
+            val node = tree.nodes[e.keyChar - 'a']
+            when (node) {
                 is Tree.Node -> {
-                    tree = subtree
+                    tree = node
                     repaint()
                 }
                 is Tree.Leaf -> {
-                    editor.caretModel.moveToOffset(subtree.value)
+                    editor.caretModel.moveToOffset(node.value)
                     detach()
                 }
             }
@@ -114,14 +117,20 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
     override fun keyPressed(e: KeyEvent) {
         println(e)
 
-        if (e.keyCode == VK_ESCAPE || editorEscapeKeyStrokes.contains(getKeyStrokeForEvent(e))) {
+        if (e.keyCode == VK_ESCAPE || editorEscapeKeyStrokes.contains(
+                getKeyStrokeForEvent(e)
+            )
+        ) {
             detach()
         }
     }
 
     override fun keyReleased(e: KeyEvent) {
         println(e)
-        if (e.keyCode == VK_ESCAPE || editorEscapeKeyStrokes.contains(getKeyStrokeForEvent(e))) {
+        if (e.keyCode == VK_ESCAPE || editorEscapeKeyStrokes.contains(
+                getKeyStrokeForEvent(e)
+            )
+        ) {
             detach()
         }
     }
@@ -144,13 +153,12 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
             RenderingHints.VALUE_ANTIALIAS_ON
         )
         val lineHeight = editor.lineHeight
-        tree.forEachPath { path, length, pos ->
+        tree.forEach { path, offset ->
 
-            val marker =
-                path.asSequence().take(length).map { 'a' + it }.joinToString("")
-            val lineMetrics = fontMetrics.getLineMetrics(marker, g)
-            val fontRect = fontMetrics.getStringBounds(marker, g)
-            val loc = editor.offsetToXY(pos)
+            val label = path.map { 'a' + it }.joinToString("")
+            val lineMetrics = fontMetrics.getLineMetrics(label, g)
+            val fontRect = fontMetrics.getStringBounds(label, g)
+            val loc = editor.offsetToXY(offset)
 
             g.color = markerBackground
             g.fillRoundRect(
@@ -173,7 +181,7 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
 
             g.color = Color.BLACK
             g.drawString(
-                marker,
+                label,
                 loc.x + contentComponent.x,
                 (loc.y + contentComponent.y + lineMetrics.ascent + lineMetrics.leading + (lineHeight - lineMetrics.height) / 2).roundToInt()
             )
