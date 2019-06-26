@@ -28,6 +28,10 @@ fun addPanel(editor: Editor): Panel {
 private const val markerArc = 6
 private val markerBackground = Color(0xffde7a)
 private val markerBorder = markerBackground.darker()
+private val markerChars = "fjdkslaowierqghpnvzxcmbtyu".toCharArray()
+private val markerIndices = markerChars.asSequence()
+    .mapIndexed { i, c -> Pair(c, i) }
+    .associate { it }
 
 class Panel(private val editor: Editor) : JComponent(), KeyListener {
 
@@ -90,7 +94,7 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
             listening = false
             tree = editor
                 .searchVisibleOffsets(e.keyChar, true)
-                .toCompleteTree(26)
+                .toCompleteTree(markerChars.size)
             repaint()
             return
         }
@@ -98,18 +102,16 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
         // TODO no jump if there is no option
         // TODO jump directly if there is one option
 
-        if (e.keyChar in 'a'..'z') {
-            // TODO check index
-            val node = tree.nodes[e.keyChar - 'a']
-            when (node) {
-                is Tree.Node -> {
-                    tree = node
-                    repaint()
-                }
-                is Tree.Leaf -> {
-                    editor.caretModel.moveToOffset(node.value)
-                    detach()
-                }
+        val index = markerIndices[e.keyChar] ?: return
+        val node = tree.nodes[index]
+        when (node) {
+            is Tree.Node -> {
+                tree = node
+                repaint()
+            }
+            is Tree.Leaf -> {
+                editor.caretModel.moveToOffset(node.value)
+                detach()
             }
         }
     }
@@ -155,7 +157,7 @@ class Panel(private val editor: Editor) : JComponent(), KeyListener {
         val lineHeight = editor.lineHeight
         tree.forEach { path, offset ->
 
-            val label = path.map { 'a' + it }.joinToString("")
+            val label = path.map(markerChars::get).joinToString("")
             val lineMetrics = fontMetrics.getLineMetrics(label, g)
             val fontRect = fontMetrics.getStringBounds(label, g)
             val loc = editor.offsetToXY(offset)
