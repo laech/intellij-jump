@@ -1,8 +1,23 @@
 package com.gitlab.lae.intellij.jump
 
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.openapi.actionSystem.KeyboardShortcut
 import com.intellij.openapi.editor.Editor
 import java.awt.Point
 import java.awt.Rectangle
+import javax.swing.KeyStroke
+
+data class EditorOffset(val editor: Editor, val offset: Int)
+
+fun Sequence<Editor>.searchVisibleOffsets(
+    query: Char,
+    ignoreCase: Boolean
+): Sequence<EditorOffset> =
+    flatMap { editor ->
+        editor.searchVisibleOffsets(query, ignoreCase)
+            .map { offset -> EditorOffset(editor, offset) }
+    }
 
 fun Editor.searchVisibleOffsets(
     query: Char,
@@ -56,3 +71,19 @@ private fun Editor.getAreaStartOffset(area: Rectangle) =
             )
         )
     )
+
+fun getSingleStrokeEditorEscapeKeys(
+    actionManager: ActionManager = ActionManager.getInstance()
+): Set<KeyStroke> {
+    val shortcuts = actionManager
+        .getActionOrStub(IdeActions.ACTION_EDITOR_ESCAPE)
+        ?.shortcutSet
+        ?.shortcuts
+        ?: return emptySet()
+    return shortcuts
+        .asSequence()
+        .filterIsInstance<KeyboardShortcut>()
+        .filter { it.secondKeyStroke == null }
+        .map { it.firstKeyStroke }
+        .toSet()
+}

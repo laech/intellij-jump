@@ -1,15 +1,16 @@
 package com.gitlab.lae.intellij.jump
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.Caret
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.actionSystem.EditorActionHandler
-import com.intellij.openapi.editor.actions.TextComponentEditorAction
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.project.DumbAware
 
-class JumpToChar
-    : TextComponentEditorAction(object : EditorActionHandler(false) {
+class JumpToChar : AnAction(), DumbAware {
 
-    override fun doExecute(editor: Editor, caret: Caret?, ctx: DataContext?) {
-        addPanel(editor)
+    override fun actionPerformed(e: AnActionEvent) {
+        Model(EditorFactory.getInstance().allEditors
+            .filter { it.contentComponent.isShowing })
+            .attach()
     }
-})
+
+}
