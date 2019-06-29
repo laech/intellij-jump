@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
-import static com.gitlab.lae.intellij.jump.Model.markerChars;
+import static com.gitlab.lae.intellij.jump.Jumper.markerChars;
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.util.Objects.requireNonNull;
