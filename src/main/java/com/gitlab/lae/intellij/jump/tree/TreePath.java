@@ -2,16 +2,16 @@ package com.gitlab.lae.intellij.jump.tree;
 
 import com.google.auto.value.AutoValue;
 
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-public abstract class TreePath {
+public abstract class TreePath<K> {
     private TreePath() {
     }
 
-    private static final TreePath EMPTY = new TreePath() {
+    private static final TreePath<Object> EMPTY = new TreePath<Object>() {
         @Override
-        public IntStream values() {
-            return IntStream.empty();
+        public Stream<Object> keys() {
+            return Stream.empty();
         }
 
         @Override
@@ -20,34 +20,35 @@ public abstract class TreePath {
         }
     };
 
-    static TreePath empty() {
-        return EMPTY;
+    @SuppressWarnings("unchecked")
+    static <K> TreePath<K> empty() {
+        return (TreePath<K>) EMPTY;
     }
 
-    TreePath append(int value) {
-        return SubPath.of(this, value);
+    TreePath<K> append(K key) {
+        return SubPath.of(this, key);
     }
 
-    public abstract IntStream values();
+    public abstract Stream<K> keys();
 
     @AutoValue
-    static abstract class SubPath extends TreePath {
+    static abstract class SubPath<K> extends TreePath<K> {
         SubPath() {
         }
 
-        abstract TreePath parent();
+        abstract TreePath<K> parent();
 
-        abstract int value();
+        abstract K key();
 
-        static SubPath of(TreePath parent, int value) {
-            return new AutoValue_TreePath_SubPath(parent, value);
+        static <K> SubPath<K> of(TreePath<K> parent, K value) {
+            return new AutoValue_TreePath_SubPath<>(parent, value);
         }
 
         @Override
-        public IntStream values() {
-            return IntStream.concat(
-                    parent().values(),
-                    IntStream.of(value()));
+        public Stream<K> keys() {
+            return Stream.concat(
+                    parent().keys(),
+                    Stream.of(key()));
         }
     }
 }

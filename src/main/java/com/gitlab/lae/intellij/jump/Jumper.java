@@ -12,25 +12,23 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.List;
 import java.util.*;
-import java.util.stream.IntStream;
 
 import static com.gitlab.lae.intellij.jump.editor.Editors.getSingleStrokeEditorEscapeKeys;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toList;
 import static javax.swing.KeyStroke.getKeyStrokeForEvent;
 import static javax.swing.SwingUtilities.getWindowAncestor;
 
 final class Jumper extends KeyAdapter {
 
-    static final String markerChars = "fjdkslaowierqghpnvzxcmbtyu";
+    private static final List<String> markers = "fjdkslaowierqghpnvzxcmbtyu"
+            .codePoints()
+            .mapToObj(i -> new String(new int[]{i}, 0, 1))
+            .collect(toList());
 
-    private static final Map<Character, Integer> markerIndices = IntStream
-            .range(0, markerChars.length()).boxed()
-            .collect(toMap(markerChars::charAt, identity()));
-
-    private TreeNode<EditorOffset> tree = TreeNode.empty();
+    private TreeNode<String, EditorOffset> tree = TreeNode.empty();
     private final Set<KeyStroke> editorEscapeKeyStrokes = new HashSet<>();
     private final Map<Editor, KeyListener[]> existingKeyListeners = new HashMap<>();
     private final Map<Editor, Highlighter> highlighters = new HashMap<>();
@@ -42,16 +40,13 @@ final class Jumper extends KeyAdapter {
             return;
         }
 
-        Integer index = markerIndices.get(e.getKeyChar());
-        if (index == null) {
-            return;
-        }
-        Tree<EditorOffset> node = tree.nodes().get(index); // TODO index out of bound
-        if (node instanceof TreeNode<?>) {
-            tree = (TreeNode<EditorOffset>) node;
+        // TODO e.getKeyChar is char not string
+        Tree<String, EditorOffset> node = tree.nodes().get(String.valueOf(e.getKeyChar()));
+        if (node instanceof TreeNode<?, ?>) {
+            tree = (TreeNode<String, EditorOffset>) node;
             highlighters.values().forEach(it -> it.setTree(tree));
         } else {
-            jump(((TreeLeaf<EditorOffset>) node).value());
+            jump(((TreeLeaf<?, EditorOffset>) node).value());
         }
     }
 
@@ -97,7 +92,14 @@ final class Jumper extends KeyAdapter {
 
         // offsets may not contain all editors in the editors collection,
         // we want to put highlighters on all editors for listening key inputs
-        tree = Tree.of(offsets.stream(), markerChars.length());
+        Tree<Integer, EditorOffset> t = Tree.of(offsets.stream(), markers.size());
+        if (t instanceof TreeLeaf<?, ?>) {
+            jump(((TreeLeaf<Integer, EditorOffset>) t).value());
+            return;
+        }
+
+        tree = (TreeNode<String, EditorOffset>) t.mapKey(markers::get);
+
         for (Editor editor : editors) {
             Highlighter highlighter = new Highlighter(editor);
             highlighter.setTree(tree);

@@ -1,33 +1,59 @@
 package com.gitlab.lae.intellij.jump.tree;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.partition;
 import static java.util.stream.Collectors.toList;
 
-public abstract class Tree<T> {
+public abstract class Tree<K, V> {
     Tree() {
     }
 
-    public void forEach(BiConsumer<TreePath, T> action) {
+    public void forEach(BiConsumer<TreePath<K>, V> action) {
         forEach(TreePath.empty(), action);
     }
 
-    abstract void forEach(TreePath path, BiConsumer<TreePath, T> action);
+    public abstract <R> Tree<R, V> mapKey(Function<? super K, ? extends R> mapper);
 
-    public static <T> TreeNode<T> of(Stream<T> items, int nodeSize) {
-        return join(items.map(TreeLeaf::of).collect(toList()), nodeSize);
+    abstract void forEach(TreePath<K> path, BiConsumer<TreePath<K>, V> action);
+
+    public static <V> Tree<Integer, V> of(Stream<V> items, int nodeSize) {
+        return join(items
+                .map(TreeLeaf::<Integer, V>of)
+                .collect(toList()), nodeSize);
     }
 
-    private static <T> TreeNode<T> join(List<Tree<T>> nodes, int degree) {
-        if (nodes.size() <= degree) {
-            return TreeNode.of(nodes);
+    private static <V> Tree<Integer, V> join(
+            List<? extends Tree<Integer, V>> nodes,
+            int nodeSize
+    ) {
+        if (nodeSize < 1) {
+            throw new IllegalArgumentException("nodeSize=" + nodeSize);
         }
-        List<Tree<T>> subtrees = partition(nodes, degree).stream()
-                .map(list -> join(list, degree))
+        if (nodes.isEmpty()) {
+            return TreeNode.empty();
+        }
+        if (nodes.size() == 1) {
+            return nodes.get(0);
+        }
+        if (nodes.size() <= nodeSize) {
+            return TreeNode.of(IntStream
+                    .range(0, nodes.size())
+                    .collect(ImmutableMap::<Integer, Tree<Integer, V>>builder,
+                            (result, i) -> result.put(i, nodes.get(i)),
+                            (a, b) -> a.putAll(b.build()))
+                    .build());
+        }
+        List<Tree<Integer, V>> subtrees = partition(nodes, nodeSize)
+                .stream()
+                .map(list -> join(list, nodeSize))
                 .collect(toList());
-        return join(subtrees, degree);
+        return join(subtrees, nodeSize);
     }
 }
