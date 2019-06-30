@@ -17,9 +17,17 @@ import static java.util.Objects.requireNonNull;
 
 final class Highlighter extends JComponent {
 
-    private static final int markerArc = 6;
-    private static final Color markerBackground = new Color(0xffde7a);
-    private static final Color markerBorder = markerBackground.darker();
+    private static final int markerBorderRound = 6;
+    private static final int markerInnerRound = 4;
+
+    @SuppressWarnings("UseJBColor")
+    private static final Color markerForeground = Color.BLACK;
+
+    @SuppressWarnings("UseJBColor")
+    private static final Color markerBackground = new Color(0xffe9a2);
+
+    @SuppressWarnings("UseJBColor")
+    private static final Color markerBorder = new Color(0xeace77);
 
     private final Editor editor;
 
@@ -73,8 +81,8 @@ final class Highlighter extends JComponent {
                     loc.y + contentComponent.getY(),
                     (int) fontRect.getWidth(),
                     lineHeight,
-                    markerArc,
-                    markerArc);
+                    markerInnerRound,
+                    markerInnerRound);
 
             g.setColor(markerBorder);
             g.drawRoundRect(
@@ -82,10 +90,10 @@ final class Highlighter extends JComponent {
                     loc.y + contentComponent.getY(),
                     (int) (fontRect.getWidth() + 1),
                     lineHeight,
-                    markerArc,
-                    markerArc);
+                    markerBorderRound,
+                    markerBorderRound);
 
-            g.setColor(Color.BLACK);
+            g.setColor(markerForeground);
             g.drawString(
                     label,
                     loc.x + contentComponent.getX(),
