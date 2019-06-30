@@ -71,7 +71,7 @@ final class Jumper extends KeyAdapter {
 
     private boolean isCancel(KeyEvent e) {
         return e.getKeyCode() == VK_ESCAPE ||
-                editorEscapeKeyStrokes.contains(getKeyStrokeForEvent(e));
+                editorEscapeKeyStrokes.contains(getKeyStrokeForEvent(e)); // TODO not working
     }
 
     void attach(
