@@ -40,8 +40,10 @@ final class Jumper extends KeyAdapter {
             return;
         }
 
-        // TODO e.getKeyChar is char not string
         Tree<String, EditorOffset> node = tree.nodes().get(String.valueOf(e.getKeyChar()));
+        if (node == null) {
+            return;
+        }
         if (node instanceof TreeNode<?, ?>) {
             tree = (TreeNode<String, EditorOffset>) node;
             highlighters.values().forEach(it -> it.setTree(tree));
