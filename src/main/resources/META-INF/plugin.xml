@@ -1,10 +1,10 @@
 <idea-plugin>
-    <id>com.gitlab.lae.intellij.jump.jump</id>
+    <id>com.gitlab.lae.intellij.jump</id>
     <name>Jump</name>
     <vendor url="https://gitlab.com/lae/intellij-jump">Lae</vendor>
 
     <description><![CDATA[
-    Move the caret to any visiable location of the editor quickly, using the keyboard.
+    Move the caret to any visible location of the editor quickly, using the keyboard.
     ]]></description>
 
     <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
