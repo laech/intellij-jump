@@ -5,7 +5,6 @@ Just like [avy](https://github.com/abo-abo/avy).
 
 This package provides a single action *Jump to Char*, which you can assign a
 keyboard shortcut to, under keymap settings -> Plug-ins -> Jump.
-First, under keymap settings, assign a keyboard shortcut to 
 
 To build the plugin locally, run `./gradlew clean build`, then
 build/distributions/jump-xxx.zip will be created.
