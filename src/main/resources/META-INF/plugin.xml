@@ -4,7 +4,10 @@
     <vendor url="https://gitlab.com/lae/intellij-jump">Lae</vendor>
 
     <description><![CDATA[
-    Move the caret to any visible location of the editor quickly, using the keyboard.
+    Jump to any visible location of any visible editor quickly, using the keyboard.
+
+    This package provides a single action Jump to Char, which you can assign a
+    keyboard shortcut to, under keymap settings -> Plug-ins -> Jump.
     ]]></description>
 
     <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
