@@ -10,9 +10,11 @@ repositories {
     mavenCentral()
 }
 
+ext.intellijVersion = project.properties['intellijVersion'] ?: '2018.1'
+
 intellij {
-    version '2018.1'
-    updateSinceUntilBuild false
+    version intellijVersion
+    updateSinceUntilBuild = false
 }
 
 test {
