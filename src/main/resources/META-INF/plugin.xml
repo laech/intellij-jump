@@ -10,6 +10,14 @@
     keyboard shortcut to, under keymap settings -> Plug-ins -> Jump.
     ]]></description>
 
+    <change-notes><![CDATA[
+    <br/>
+    0.2
+    <ul>
+    <li><a href="https://gitlab.com/lae/intellij-jump/issues/1">Locations closer to the caret get easier key strokes</a></li>
+    </ul>
+    ]]></change-notes>
+
     <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
     <idea-version since-build="181"/>
 

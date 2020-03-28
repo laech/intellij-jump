@@ -7,6 +7,7 @@ import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCa
 
 import static com.gitlab.lae.intellij.jump.editor.Editors.searchOffsets;
 import static com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT;
+import static java.util.stream.Collectors.toList;
 
 public final class EditorsTest extends LightPlatformCodeInsightFixtureTestCase {
 
@@ -15,7 +16,9 @@ public final class EditorsTest extends LightPlatformCodeInsightFixtureTestCase {
         Editor editor = myFixture.getEditor();
         assertOrderedEquals(
                 searchOffsets(editor, "o", true, 0, 10).toArray(),
-                new int[]{4, 6});
+                EditorOffset.of(editor, 4),
+                EditorOffset.of(editor, 6)
+        );
     }
 
     public void testSearchOffsetsSkipFoldRegions() {
@@ -38,6 +41,27 @@ public final class EditorsTest extends LightPlatformCodeInsightFixtureTestCase {
         });
         assertOrderedEquals(
                 searchOffsets(editor, "o", true, 0, 40).toArray(),
-                new int[]{26, 28});
+                EditorOffset.of(editor, 26),
+                EditorOffset.of(editor, 28)
+        );
+    }
+
+    public void testSearchOffsetsSortsByDistanceFromCaret() {
+        String text = "ABAB          A";
+        myFixture.configureByText(PLAIN_TEXT, text);
+        Editor editor = myFixture.getEditor();
+        editor.getCaretModel().getPrimaryCaret().moveToOffset(4);
+        assertOrderedEquals(
+                searchOffsets(
+                        editor,
+                        "a",
+                        true,
+                        0,
+                        text.length()
+                ).collect(toList()),
+                EditorOffset.of(editor, 2),
+                EditorOffset.of(editor, 0),
+                EditorOffset.of(editor, 14)
+        );
     }
 }
