@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.gitlab.lae.intellij.jump'
-version '0.2-SNAPSHOT'
+version '0.2'
 sourceCompatibility = 1.8
 
 repositories {
