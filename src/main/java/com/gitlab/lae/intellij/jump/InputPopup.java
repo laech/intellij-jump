@@ -1,5 +1,6 @@
 package com.gitlab.lae.intellij.jump;
 
+import com.gitlab.lae.intellij.jump.editor.EditorOffset;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
@@ -7,6 +8,7 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -30,11 +32,19 @@ final class InputPopup extends KeyAdapter {
     private final JTextField field;
     private final Jumper jumper;
 
-    InputPopup(Jumper jumper, ActionManager actionManager) {
+    @Nullable
+    private final Editor activeEditor;
+
+    InputPopup(
+            Jumper jumper,
+            ActionManager actionManager,
+            @Nullable Editor activeEditor
+    ) {
         this.jumper = requireNonNull(jumper);
         this.actionManager = requireNonNull(actionManager);
         this.field = createTextField(this);
         this.popup = createPopup(createContainer(field), field);
+        this.activeEditor = activeEditor;
         registerCancel(actionManager, popup);
     }
 
@@ -95,14 +105,16 @@ final class InputPopup extends KeyAdapter {
             return;
         }
 
-        List<Editor> editors = stream(EditorFactory.getInstance().getAllEditors())
+        List<Editor> editors = stream(EditorFactory
+                .getInstance()
+                .getAllEditors())
                 .filter(editor -> editor.getContentComponent().isShowing())
                 .collect(toList());
 
-        jumper.attach(
-                editors,
-                searchVisibleOffsets(editors, query, true)
-                        .collect(toList()),
-                actionManager);
+        List<EditorOffset> offsets =
+                searchVisibleOffsets(activeEditor, editors, query, true)
+                        .collect(toList());
+
+        jumper.attach(editors, offsets, actionManager);
     }
 }

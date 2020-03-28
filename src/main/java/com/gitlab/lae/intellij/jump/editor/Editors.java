@@ -3,18 +3,22 @@ package com.gitlab.lae.intellij.jump.editor;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
+import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.FoldRegion;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.intellij.openapi.actionSystem.IdeActions.ACTION_EDITOR_ESCAPE;
+import static java.lang.Math.abs;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
 import static java.util.Objects.requireNonNull;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.function.Function.identity;
@@ -28,38 +32,54 @@ public final class Editors {
     }
 
     public static Stream<EditorOffset> searchVisibleOffsets(
+            @Nullable Editor activeEditor,
             Collection<? extends Editor> editors,
             String query,
             boolean ignoreCase
     ) {
-        return editors.stream().flatMap(editor ->
-                searchVisibleOffsets(editor, query, ignoreCase)
-                        .mapToObj(offset -> EditorOffset.of(editor, offset)));
+        return editors.stream()
+                .flatMap(editor -> searchVisibleOffsets(
+                        editor,
+                        query,
+                        ignoreCase
+                ))
+                .sorted(comparingInt((EditorOffset o) ->
+                        o.editor().equals(activeEditor) ? 0 : 1));
     }
 
-    private static IntStream searchVisibleOffsets(
-            Editor editor,
-            String query,
-            boolean ignoreCase
+    private static Stream<EditorOffset> searchVisibleOffsets(
+            Editor editor, String query, boolean ignoreCase
     ) {
         Rectangle area = editor.getScrollingModel().getVisibleArea();
         int start = getAreaStartOffset(editor, area);
         int end = getAreaEndOffset(editor, area);
-        return searchOffsets(editor, query, ignoreCase, start, end);
+        return searchOffsets(
+                editor,
+                query,
+                ignoreCase,
+                start,
+                end
+        );
     }
 
-    static IntStream searchOffsets(
-            Editor editor,
-            String query,
-            boolean ignoreCase,
-            int start,
-            int end
+    static Stream<EditorOffset> searchOffsets(
+            Editor editor, String query, boolean ignoreCase, int start, int end
     ) {
-        return intStream(
-                spliteratorUnknownSize(
-                        new OffsetIterator(editor, query, ignoreCase, start, end),
-                        0),
-                false);
+        OffsetIterator iterator = new OffsetIterator(
+                editor,
+                query,
+                ignoreCase,
+                start,
+                end
+        );
+        return intStream(spliteratorUnknownSize(iterator, 0), false)
+                .mapToObj(offset -> EditorOffset.of(editor, offset))
+                .sorted(comparing(Editors::distanceFromCaret));
+    }
+
+    private static int distanceFromCaret(EditorOffset o) {
+        Caret caret = o.editor().getCaretModel().getPrimaryCaret();
+        return abs(o.offset() - caret.getOffset());
     }
 
     private static class OffsetIterator implements PrimitiveIterator.OfInt {
@@ -91,14 +111,20 @@ public final class Editors {
 
         @Override
         public boolean hasNext() {
-            if (next < 0) computeNext();
+            if (next < 0) {
+                computeNext();
+            }
             return next >= 0;
         }
 
         @Override
         public int nextInt() {
-            if (next < 0) computeNext();
-            if (next < 0) throw new NoSuchElementException();
+            if (next < 0) {
+                computeNext();
+            }
+            if (next < 0) {
+                throw new NoSuchElementException();
+            }
             int result = next;
             next = -1;
             return result;
@@ -107,7 +133,8 @@ public final class Editors {
         private void computeNext() {
             boolean found = false;
             while (!done && !found) {
-                currentStart = indexOf(chars, query, currentStart + 1, ignoreCase);
+                currentStart =
+                        indexOf(chars, query, currentStart + 1, ignoreCase);
                 next = currentStart;
                 if (next < 0) {
                     done = true;
@@ -116,7 +143,8 @@ public final class Editors {
                     Map.Entry<Integer, FoldRegion> entry =
                             regionsByStartOffset.floorEntry(next);
 
-                    if (entry == null || entry.getValue().getEndOffset() <= next) {
+                    if (entry == null ||
+                            entry.getValue().getEndOffset() <= next) {
                         found = true;
                     }
                 }
@@ -124,14 +152,17 @@ public final class Editors {
         }
     }
 
-    private static NavigableMap<Integer, FoldRegion> getFoldRegionByStartOffset(Editor editor) {
+    private static NavigableMap<Integer, FoldRegion> getFoldRegionByStartOffset(
+            Editor editor
+    ) {
         return stream(editor.getFoldingModel().getAllFoldRegions())
                 .filter(o -> !o.isExpanded())
                 .collect(toMap(
                         FoldRegion::getStartOffset,
                         identity(),
                         (a, b) -> a.getEndOffset() >= b.getEndOffset() ? a : b,
-                        TreeMap::new));
+                        TreeMap::new
+                ));
     }
 
     private static int getAreaStartOffset(Editor editor, Rectangle area) {
