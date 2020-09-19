@@ -11,7 +11,7 @@ plugins {
 }
 
 group 'com.gitlab.lae.intellij.jump'
-version '0.3-SNAPSHOT'
+version '0.2.1-SNAPSHOT'
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
   kotlinOptions {
