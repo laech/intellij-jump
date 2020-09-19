@@ -1,29 +1,37 @@
+buildscript {
+  ext.kotlinVersion = "1.3.72"
+  dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+  }
+}
+
 plugins {
-    id 'org.jetbrains.intellij' version '0.4.9'
+  id 'org.jetbrains.intellij' version '0.4.22'
+  id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
 }
 
 group 'com.gitlab.lae.intellij.jump'
 version '0.3-SNAPSHOT'
-sourceCompatibility = 1.8
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+}
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 ext.intellijVersion = project.properties['intellijVersion'] ?: '2018.1'
 
 intellij {
-    version intellijVersion
-    updateSinceUntilBuild = false
+  version intellijVersion
+  updateSinceUntilBuild = false
 }
 
 test {
-    testLogging {
-        exceptionFormat = 'full'
-    }
-}
-
-dependencies {
-    compile "com.google.auto.value:auto-value-annotations:1.6.2"
-    annotationProcessor "com.google.auto.value:auto-value:1.6.2"
+  testLogging {
+    exceptionFormat = 'full'
+  }
 }

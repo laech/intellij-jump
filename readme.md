@@ -1,7 +1,6 @@
 # Jump
 
 Jump to any visible location of any visible editor quickly, using the keyboard.
-Just like [avy](https://github.com/abo-abo/avy).
 
 This package provides a single action *Jump to Char*, which you can assign a
 keyboard shortcut to, under keymap settings -> Plug-ins -> Jump. When invoked,

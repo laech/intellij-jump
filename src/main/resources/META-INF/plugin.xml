@@ -1,41 +1,45 @@
 <idea-plugin>
-    <id>com.gitlab.lae.intellij.jump</id>
-    <name>Jump</name>
-    <vendor url="https://gitlab.com/lae/intellij-jump">Lae</vendor>
+  <id>com.gitlab.lae.intellij.jump</id>
+  <name>Jump</name>
+  <vendor>Lae</vendor>
 
-    <description><![CDATA[
+  <description><![CDATA[
     Jump to any visible location of any visible editor quickly, using the keyboard.
 
     This package provides a single action Jump to Char, which you can assign a
     keyboard shortcut to, under keymap settings -> Plug-ins -> Jump.
     ]]></description>
 
-    <change-notes><![CDATA[
+  <change-notes><![CDATA[
     <br/>
     0.2
     <ul>
-    <li><a href="https://gitlab.com/lae/intellij-jump/issues/1">Locations closer to the caret get easier key strokes</a></li>
+      <li>
+        <a href="https://gitlab.com/lae/intellij-jump/issues/1">
+          Locations closer to the caret get easier key strokes
+        </a>
+      </li>
     </ul>
     ]]></change-notes>
 
-    <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
-    <idea-version since-build="181"/>
+  <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
+  <idea-version since-build="181"/>
 
-    <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
-    <depends>com.intellij.modules.platform</depends>
+  <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
+  <depends>com.intellij.modules.platform</depends>
 
-    <!--
-    <change-notes>
-    </change-notes>
-    -->
+  <!--
+  <change-notes>
+  </change-notes>
+  -->
 
-    <extensions defaultExtensionNs="com.intellij">
-    </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+  </extensions>
 
-    <actions>
-        <action
-                id="com.gitlab.lae.intellij.jump.JumpToChar"
-                class="com.gitlab.lae.intellij.jump.JumpToChar"
-                text="Jump to Char"/>
-    </actions>
+  <actions>
+    <action
+      id="com.gitlab.lae.intellij.jump.JumpToChar"
+      class="com.gitlab.lae.intellij.jump.JumpToChar"
+      text="Jump to Char"/>
+  </actions>
 </idea-plugin>
