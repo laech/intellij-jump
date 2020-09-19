@@ -10,6 +10,7 @@ import java.awt.RenderingHints.KEY_ANTIALIASING
 import java.awt.RenderingHints.VALUE_ANTIALIAS_ON
 import java.util.Comparator.comparingInt
 import javax.swing.JComponent
+import kotlin.math.ceil
 
 private const val markerBorderRound = 6
 private const val markerInnerRound = 4
@@ -52,25 +53,29 @@ class Highlighter(private val editor: Editor) : JComponent() {
 
     entries.forEach { (label, value) ->
       val lineMetrics = fontMetrics.getLineMetrics(label, g)
-      val fontRect = fontMetrics.getStringBounds(label, g)
+      val fontWidth = fontMetrics.stringWidth(label)
+      val fontHeight = fontMetrics.height
       val loc = value.editor.offsetToXY(value.offset)
+      val bgX = loc.x + contentComponent.x
+      val bgY = loc.y + contentComponent.y +
+        ((editor.lineHeight - lineMetrics.height) / 2.0).ceilToInt()
 
       g.color = markerBackground
       g.fillRoundRect(
-        loc.x + contentComponent.x,
-        loc.y + contentComponent.y,
-        fontRect.width.toInt(),
-        editor.lineHeight,
+        bgX,
+        bgY,
+        fontWidth,
+        fontHeight,
         markerInnerRound,
         markerInnerRound
       )
 
       g.color = markerBorder
       g.drawRoundRect(
-        loc.x + contentComponent.x,
-        loc.y + contentComponent.y,
-        fontRect.width.toInt(),
-        editor.lineHeight,
+        bgX,
+        bgY,
+        fontWidth,
+        fontHeight,
         markerBorderRound,
         markerBorderRound
       )
@@ -78,12 +83,14 @@ class Highlighter(private val editor: Editor) : JComponent() {
       g.color = markerForeground
       g.drawString(
         label,
-        loc.x + contentComponent.x.toFloat(),
+        bgX,
         loc.y + contentComponent.y +
-          lineMetrics.ascent +
-          lineMetrics.leading +
-          (editor.lineHeight - lineMetrics.height) / 2
+          (lineMetrics.ascent +
+            lineMetrics.leading +
+            (editor.lineHeight - lineMetrics.height) / 2.0).ceilToInt()
       )
     }
   }
 }
+
+private fun Double.ceilToInt() = ceil(this).toInt()
