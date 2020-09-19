@@ -24,7 +24,7 @@ class Highlighter(private val editor: Editor) : JComponent() {
   fun setTree(tree: Tree<String, EditorOffset>) {
     entries = tree.asSequence()
       .filter { (_, editorOffset) -> editor == editorOffset.editor }
-      .map { (path, editorOffset) -> path.keys.joinToString() to editorOffset }
+      .map { (path, editorOffset) -> path.keys.joinToString("") to editorOffset }
       .sortedWith(comparingInt { (_, editorOffset) -> editorOffset.offset })
       .toList()
 
@@ -67,9 +67,9 @@ class Highlighter(private val editor: Editor) : JComponent() {
 
       g.color = markerBorder
       g.drawRoundRect(
-        loc.x + contentComponent.x - 1,
+        loc.x + contentComponent.x,
         loc.y + contentComponent.y,
-        (fontRect.width + 1).toInt(),
+        fontRect.width.toInt(),
         editor.lineHeight,
         markerBorderRound,
         markerBorderRound
