@@ -20,13 +20,13 @@ private val markerBorder = markerBackground.darker()
 
 class Highlighter(private val editor: Editor) : JComponent() {
 
-  private var entries = emptyList<Pair<String, EditorOffset>>()
+  private var entries = emptyList<Pair<String, Int>>()
 
   fun setTree(tree: Tree<String, EditorOffset>) {
     entries = tree.asSequence()
-      .filter { (_, editorOffset) -> editor == editorOffset.editor }
-      .map { (path, editorOffset) -> path.keys.joinToString("") to editorOffset }
-      .sortedWith(comparingInt { (_, editorOffset) -> editorOffset.offset })
+      .filter { (_, value) -> editor == value.editor }
+      .map { (path, value) -> path.keys.joinToString("") to value.offset }
+      .sortedWith(comparingInt { it.second })
       .toList()
 
     // Draw from the smallest offset, so that if there are
@@ -51,21 +51,21 @@ class Highlighter(private val editor: Editor) : JComponent() {
     g.font = font
     g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
 
-    entries.forEach { (label, value) ->
-      val lineMetrics = fontMetrics.getLineMetrics(label, g)
-      val fontWidth = fontMetrics.stringWidth(label)
-      val fontHeight = fontMetrics.height
-      val loc = value.editor.offsetToXY(value.offset)
-      val bgX = loc.x + contentComponent.x
-      val bgY = loc.y + contentComponent.y +
-        ((editor.lineHeight - lineMetrics.height) / 2.0).ceilToInt()
+    entries.forEach { (label, offset) ->
+      val metrics = fontMetrics.getLineMetrics(label, g)
+      val width = fontMetrics.stringWidth(label)
+      val height = fontMetrics.height
+      val point = editor.offsetToPoint2D(offset)
+      val bgX = (point.x + contentComponent.x).ceilToInt()
+      val bgY = (point.y + contentComponent.y +
+        (editor.lineHeight - metrics.height) / 2.0).ceilToInt()
 
       g.color = markerBackground
       g.fillRoundRect(
         bgX,
         bgY,
-        fontWidth,
-        fontHeight,
+        width,
+        height,
         markerInnerRound,
         markerInnerRound
       )
@@ -74,8 +74,8 @@ class Highlighter(private val editor: Editor) : JComponent() {
       g.drawRoundRect(
         bgX,
         bgY,
-        fontWidth,
-        fontHeight,
+        width,
+        height,
         markerBorderRound,
         markerBorderRound
       )
@@ -84,10 +84,10 @@ class Highlighter(private val editor: Editor) : JComponent() {
       g.drawString(
         label,
         bgX,
-        loc.y + contentComponent.y +
-          (lineMetrics.ascent +
-            lineMetrics.leading +
-            (editor.lineHeight - lineMetrics.height) / 2.0).ceilToInt()
+        (point.y + contentComponent.y +
+          metrics.ascent +
+          metrics.leading +
+          (editor.lineHeight - metrics.height) / 2).toInt()
       )
     }
   }
