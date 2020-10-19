@@ -12,6 +12,16 @@
 
   <change-notes><![CDATA[
     <br/>
+    0.2.2
+    <ul>
+      <li>
+        <a href="https://github.com/laech/intellij-jump/issues/1">
+          Fix jumping while focus in some input text fields causes characters to
+          be typed into the text fields.
+        </a>
+      </li>
+    </ul>
+    <br/>
     0.2.1
     <ul>
       <li>Internal refactoring.</li>
