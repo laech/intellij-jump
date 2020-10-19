@@ -21,6 +21,8 @@ class Jumper : KeyAdapter() {
   private val highlighters = HashMap<Editor, Highlighter>()
 
   override fun keyTyped(e: KeyEvent) {
+    e.consume()
+
     if (isCancel(e)) {
       detach()
       return
