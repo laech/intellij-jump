@@ -1,9 +1,9 @@
 package com.gitlab.lae.intellij.jump
 
 import com.intellij.openapi.fileTypes.FileTypes
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
-class EditorsTest : LightPlatformCodeInsightFixtureTestCase() {
+class EditorsTest : BasePlatformTestCase() {
 
   fun `test search offsets returns offsets matching query`() {
     myFixture.configureByText(FileTypes.PLAIN_TEXT, "HelloWorld")

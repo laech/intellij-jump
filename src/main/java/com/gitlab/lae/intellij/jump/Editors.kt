@@ -59,7 +59,7 @@ private fun getFoldRegionByStartOffset(editor: Editor)
   editor.foldingModel.allFoldRegions
     .filterNot(FoldRegion::isExpanded)
     .groupBy(FoldRegion::getStartOffset)
-    .mapValuesTo(TreeMap()) { it.value.maxBy(FoldRegion::getEndOffset) }
+    .mapValuesTo(TreeMap()) { it.value.maxByOrNull(FoldRegion::getEndOffset) }
 
 private fun getAreaStartOffset(editor: Editor, area: Rectangle): Int =
   editor.logicalPositionToOffset(
