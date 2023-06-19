@@ -23,11 +23,13 @@ class Highlighter(private val editor: Editor) : JComponent() {
   private var entries = emptyList<Pair<String, Int>>()
 
   fun setTree(tree: Tree<String, EditorOffset>) {
-    entries = tree.asSequence()
-      .filter { (_, value) -> editor == value.editor }
-      .map { (path, value) -> path.keys.joinToString("") to value.offset }
-      .sortedWith(comparingInt { it.second })
-      .toList()
+    entries =
+        tree
+            .asSequence()
+            .filter { (_, value) -> editor == value.editor }
+            .map { (path, value) -> path.keys.joinToString("") to value.offset }
+            .sortedWith(comparingInt { it.second })
+            .toList()
 
     // Draw from the smallest offset, so that if there are
     // overlaps, the head of the next offset will be drawn
@@ -57,38 +59,25 @@ class Highlighter(private val editor: Editor) : JComponent() {
       val height = fontMetrics.height
       val point = editor.offsetToPoint2D(offset)
       val bgX = (point.x + contentComponent.x).ceilToInt()
-      val bgY = (point.y + contentComponent.y +
-        (editor.lineHeight - metrics.height) / 2.0).ceilToInt()
+      val bgY =
+          (point.y + contentComponent.y + (editor.lineHeight - metrics.height) / 2.0).ceilToInt()
 
       g.color = markerBackground
-      g.fillRoundRect(
-        bgX,
-        bgY,
-        width,
-        height,
-        markerInnerRound,
-        markerInnerRound
-      )
+      g.fillRoundRect(bgX, bgY, width, height, markerInnerRound, markerInnerRound)
 
       g.color = markerBorder
-      g.drawRoundRect(
-        bgX,
-        bgY,
-        width,
-        height,
-        markerBorderRound,
-        markerBorderRound
-      )
+      g.drawRoundRect(bgX, bgY, width, height, markerBorderRound, markerBorderRound)
 
       g.color = markerForeground
       g.drawString(
-        label,
-        bgX,
-        (point.y + contentComponent.y +
-          metrics.ascent +
-          metrics.leading +
-          (editor.lineHeight - metrics.height) / 2).toInt()
-      )
+          label,
+          bgX,
+          (point.y +
+                  contentComponent.y +
+                  metrics.ascent +
+                  metrics.leading +
+                  (editor.lineHeight - metrics.height) / 2)
+              .toInt())
     }
   }
 }

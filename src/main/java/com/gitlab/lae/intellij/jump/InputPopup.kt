@@ -19,9 +19,9 @@ import javax.swing.JTextField
 import javax.swing.SwingUtilities.invokeLater
 
 class InputPopup(
-  private val jumper: Jumper,
-  private val actionManager: ActionManager,
-  private val activeEditor: Editor?
+    private val jumper: Jumper,
+    private val actionManager: ActionManager,
+    private val activeEditor: Editor?
 ) : KeyAdapter() {
 
   private val field = createTextField(this)
@@ -31,14 +31,9 @@ class InputPopup(
     registerCancel(actionManager, popup)
   }
 
-  private fun registerCancel(
-    actionManager: ActionManager,
-    popup: JBPopup
-  ) {
+  private fun registerCancel(actionManager: ActionManager, popup: JBPopup) {
     getSingleStrokeEditorEscapeKeys(actionManager).forEach {
-      popup.content.registerKeyboardAction(
-        { popup.cancel() }, it, WHEN_IN_FOCUSED_WINDOW
-      )
+      popup.content.registerKeyboardAction({ popup.cancel() }, it, WHEN_IN_FOCUSED_WINDOW)
     }
   }
 
@@ -59,11 +54,11 @@ class InputPopup(
   }
 
   private fun createPopup(container: JPanel, field: JTextField): JBPopup =
-    JBPopupFactory.getInstance()
-      .createComponentPopupBuilder(container, field)
-      .setFocusable(true)
-      .setRequestFocus(true)
-      .createPopup()
+      JBPopupFactory.getInstance()
+          .createComponentPopupBuilder(container, field)
+          .setFocusable(true)
+          .setRequestFocus(true)
+          .createPopup()
 
   fun show(context: DataContext) {
     popup.showInBestPositionFor(context)
@@ -88,11 +83,9 @@ class InputPopup(
       return
     }
 
-    val editors = EditorFactory.getInstance().allEditors
-      .filter { it.contentComponent.isShowing }
+    val editors = EditorFactory.getInstance().allEditors.filter { it.contentComponent.isShowing }
 
-    val offsets =
-      searchVisibleOffsets(activeEditor, editors, query, true).toList()
+    val offsets = searchVisibleOffsets(activeEditor, editors, query, true).toList()
 
     jumper.attach(editors, offsets, actionManager)
   }

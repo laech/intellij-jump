@@ -9,21 +9,21 @@ class EditorsTest : BasePlatformTestCase() {
     myFixture.configureByText(FileTypes.PLAIN_TEXT, "HelloWorld")
     val editor = myFixture.editor
     assertOrderedEquals(
-      searchOffsets(editor, "o", true, 0, 10).toList(),
-      EditorOffset(editor, 4),
-      EditorOffset(editor, 6)
-    )
+        searchOffsets(editor, "o", true, 0, 10).toList(),
+        EditorOffset(editor, 4),
+        EditorOffset(editor, 6))
   }
 
   fun `test search offsets skip fold regions`() {
     myFixture.configureByText(
-      FileTypes.PLAIN_TEXT, """
-     HelloWorld
-     HelloWorld
-     HelloWorld
-     HelloWorld
-     """.trimIndent()
-    )
+        FileTypes.PLAIN_TEXT,
+        """
+        HelloWorld
+        HelloWorld
+        HelloWorld
+        HelloWorld
+        """
+            .trimIndent())
     val editor = myFixture.editor
     val foldingModel = editor.foldingModel
     foldingModel.runBatchFoldingOperation {
@@ -35,10 +35,9 @@ class EditorsTest : BasePlatformTestCase() {
       r2!!.isExpanded = false
     }
     assertOrderedEquals(
-      searchOffsets(editor, "o", true, 0, 40).toList(),
-      EditorOffset(editor, 26),
-      EditorOffset(editor, 28)
-    )
+        searchOffsets(editor, "o", true, 0, 40).toList(),
+        EditorOffset(editor, 26),
+        EditorOffset(editor, 28))
   }
 
   fun `test search offsets sorts by distance from caret`() {
@@ -47,10 +46,9 @@ class EditorsTest : BasePlatformTestCase() {
     val editor = myFixture.editor
     editor.caretModel.primaryCaret.moveToOffset(4)
     assertOrderedEquals(
-      searchOffsets(editor, "a", true, 0, text.length).toList(),
-      EditorOffset(editor, 2),
-      EditorOffset(editor, 0),
-      EditorOffset(editor, 14)
-    )
+        searchOffsets(editor, "a", true, 0, text.length).toList(),
+        EditorOffset(editor, 2),
+        EditorOffset(editor, 0),
+        EditorOffset(editor, 14))
   }
 }

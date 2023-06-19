@@ -6,7 +6,6 @@ import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.KeyEvent.VK_ESCAPE
 import java.awt.event.KeyListener
-import java.util.*
 import javax.swing.KeyStroke
 import javax.swing.KeyStroke.getKeyStrokeForEvent
 import javax.swing.SwingUtilities.getWindowAncestor
@@ -54,13 +53,12 @@ class Jumper : KeyAdapter() {
   }
 
   private fun isCancel(e: KeyEvent) =
-    e.keyCode == VK_ESCAPE ||
-      editorEscapeKeyStrokes.contains(getKeyStrokeForEvent(e))
+      e.keyCode == VK_ESCAPE || editorEscapeKeyStrokes.contains(getKeyStrokeForEvent(e))
 
   fun attach(
-    editors: Collection<Editor>,
-    offsets: Collection<EditorOffset>,
-    actionManager: ActionManager
+      editors: Collection<Editor>,
+      offsets: Collection<EditorOffset>,
+      actionManager: ActionManager
   ) {
     detach()
 
@@ -92,9 +90,7 @@ class Jumper : KeyAdapter() {
       contentComponent.add(highlighter)
       contentComponent.repaint()
     }
-    editorEscapeKeyStrokes.addAll(
-      getSingleStrokeEditorEscapeKeys(actionManager)
-    )
+    editorEscapeKeyStrokes.addAll(getSingleStrokeEditorEscapeKeys(actionManager))
   }
 
   private fun detach() {
