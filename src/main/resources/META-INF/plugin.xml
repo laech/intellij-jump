@@ -38,16 +38,8 @@
     </ul>
     ]]></change-notes>
 
-  <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
-  <idea-version since-build="181"/>
-
   <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
   <depends>com.intellij.modules.platform</depends>
-
-  <!--
-  <change-notes>
-  </change-notes>
-  -->
 
   <extensions defaultExtensionNs="com.intellij">
   </extensions>
