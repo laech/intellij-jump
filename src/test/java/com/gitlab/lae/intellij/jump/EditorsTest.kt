@@ -2,10 +2,15 @@ package com.gitlab.lae.intellij.jump
 
 import com.intellij.openapi.fileTypes.FileTypes
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
+@RunWith(JUnit4::class)
 class EditorsTest : BasePlatformTestCase() {
 
-  fun `test search offsets returns offsets matching query`() {
+  @Test
+  fun `search offsets returns offsets matching query`() {
     myFixture.configureByText(FileTypes.PLAIN_TEXT, "HelloWorld")
     val editor = myFixture.editor
     assertOrderedEquals(
@@ -14,7 +19,8 @@ class EditorsTest : BasePlatformTestCase() {
         EditorOffset(editor, 6))
   }
 
-  fun `test search offsets skip fold regions`() {
+  @Test
+  fun `search offsets skip fold regions`() {
     myFixture.configureByText(
         FileTypes.PLAIN_TEXT,
         """
@@ -40,7 +46,8 @@ class EditorsTest : BasePlatformTestCase() {
         EditorOffset(editor, 28))
   }
 
-  fun `test search offsets sorts by distance from caret`() {
+  @Test
+  fun `search offsets sorts by distance from caret`() {
     val text = "ABAB          A"
     myFixture.configureByText(FileTypes.PLAIN_TEXT, text)
     val editor = myFixture.editor

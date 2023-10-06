@@ -12,6 +12,13 @@ version = "0.2.3-SNAPSHOT"
 
 repositories { mavenCentral() }
 
+dependencies {
+  testImplementation("nz.lae.stacksrc:stacksrc-junit5:0.5.0")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+  testImplementation("org.junit.vintage:junit-vintage-engine:5.10.0")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.0")
+}
+
 kotlin { jvmToolchain { languageVersion.set(JavaLanguageVersion.of(11)) } }
 
 intellij { version.set("2021.1") }
@@ -22,6 +29,10 @@ spotless {
 }
 
 tasks {
-  test { testLogging { exceptionFormat = TestExceptionFormat.FULL } }
+  test {
+    useJUnitPlatform()
+    systemProperty("junit.jupiter.extensions.autodetection.enabled", true)
+    testLogging { exceptionFormat = TestExceptionFormat.FULL }
+  }
   patchPluginXml { untilBuild.set("") }
 }

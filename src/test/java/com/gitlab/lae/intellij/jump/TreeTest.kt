@@ -1,7 +1,11 @@
 package com.gitlab.lae.intellij.jump
 
-class TreeTest : junit.framework.TestCase() {
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
+class TreeTest {
+
+  @Test
   fun `test to tree`() {
     val actual = treeOf(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), 2)
     val expected =
